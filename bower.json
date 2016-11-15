@@ -1,0 +1,9 @@
+{
+  "name": "widget",
+  "dependencies": {
+    "jquery": "~2.1.4"
+  },
+  "exportsOverride": {
+    "jquery": {}
+  }
+}

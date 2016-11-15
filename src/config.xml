@@ -8,7 +8,7 @@
     <description>Display external web pages in your dashboards</description>
     <homepage>https://github.com/Wirecloud/browser-widget</homepage>
     <issuetracker>https://github.com/Wirecloud/browser-widget/issues</issuetracker>
-    <doc>docs/index.html</doc>
+    <doc>doc/index.md</doc>
     <authors>Santiago Blanco &lt;sblanco@conwet.com&gt;</authors>
   </details>
   <preferences>

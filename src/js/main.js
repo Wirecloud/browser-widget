@@ -1,4 +1,4 @@
-/*global WebBrowser*/
+/* globals WebBrowser */
 
 (function () {
 

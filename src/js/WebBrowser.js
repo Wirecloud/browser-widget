@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2015 CoNWeT Lab., Universidad Politécnica de Madrid
+ * Copyright (c) 2012-2016 CoNWeT Lab., Universidad Politécnica de Madrid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-(function () {
+/* globals StyledElements */
+
+(function (mp, se) {
 
     "use strict";
 
-    /******************************************************************************/
-    /********************************* PUBLIC *************************************/
-    /******************************************************************************/
-
     // Constructor
     var WebBrowser = function WebBrowser() {
-        // Preferences:
+        // Preferences
         this.urlPref = "";
         this.homeUrl = "";
         this.refreshingTime = 0;
         this.httpVerb = "";
         this.useProxy = false;
 
-        // Wiring:
+        // Wiring
         this.url = "";
         this.params = "";
 
         // Internal status:
-        this.layout = new StyledElements.BorderLayout();
+        this.layout = new StyledElements.VerticalLayout();
         this.currentUrl = "";
     };
 
@@ -51,25 +49,26 @@
         buildDOM.call(this);
     };
 
-    /******************************************************************************/
-    /******************************** PRIVATE *************************************/
-    /******************************************************************************/
+    // =========================================================================
+    // PRIVATE MEMBERS
+    // =========================================================================
+
 
     var setPreferences = function setPreferences() {
-        this.homeUrl = MashupPlatform.prefs.get("homeUrl");
-        this.refreshingTime = MashupPlatform.prefs.get("refreshingTime");
-        this.httpVerb = MashupPlatform.prefs.get("httpVerb");
-        this.useProxy = MashupPlatform.prefs.get("useProxy");
-        MashupPlatform.prefs.registerCallback(handlerPreferences.bind(this));
+        this.homeUrl = mp.prefs.get("homeUrl");
+        this.refreshingTime = mp.prefs.get("refreshingTime");
+        this.httpVerb = mp.prefs.get("httpVerb");
+        this.useProxy = mp.prefs.get("useProxy");
+        mp.prefs.registerCallback(handlerPreferences.bind(this));
     };
 
     var setWiringInputs = function setWiringInputs() {
-        MashupPlatform.wiring.registerCallback("urlInput", urlInputHandler.bind(this));
-        MashupPlatform.wiring.registerCallback("paramsInput", paramsInputHandler.bind(this));
+        mp.wiring.registerCallback("urlInput", urlInputHandler.bind(this));
+        mp.wiring.registerCallback("paramsInput", paramsInputHandler.bind(this));
     };
 
     var setResizeWidget = function setResizeWidget() {
-        MashupPlatform.widget.context.registerCallback(function (newValues) {
+        mp.widget.context.registerCallback(function (newValues) {
             if ("heightInPixels" in newValues || "widthInPixels" in newValues) {
                 repaint.call(this);
             }
@@ -120,7 +119,7 @@
             var options = {
                 method: this.httpVerb
             };
-            tempUrl = MashupPlatform.http.buildProxyURL(tempUrl, options);
+            tempUrl = mp.http.buildProxyURL(tempUrl, options);
         }
 
         frm.setAttribute('action', tempUrl);
@@ -160,8 +159,6 @@
             segments: a.pathname.replace(/^\//, '').split('/')
         };
     };
-
-    /******************************** HANDLERS ************************************/
 
     // Preferences
     var handlerPreferences = function handlerPreferences(preferences) {
@@ -210,9 +207,6 @@
         }
     };
 
-
-    /******************************** HELP FUNC ************************************/
-
     var repaint = function repaint() {
         if (this.layout) {
             this.layout.repaint();
@@ -258,4 +252,4 @@
 
     window.WebBrowser = WebBrowser;
 
-})();
+})(MashupPlatform, StyledElements);
