@@ -1,7 +1,14 @@
-
-body{
+body {
     background-color:white;
 }
+
+iframe {
+    height: 100%;
+    width: 100%;
+    display: block;
+    position: absolute;
+}
+
 #home, #refresh{
     font-size: 75%;
     display:inline;

@@ -26,8 +26,6 @@
         this.urlPref = "";
         this.homeUrl = "";
         this.refreshingTime = 0;
-        this.httpVerb = "";
-        this.useProxy = false;
 
         // Wiring
         this.url = "";
@@ -57,8 +55,6 @@
     var setPreferences = function setPreferences() {
         this.homeUrl = mp.prefs.get("homeUrl");
         this.refreshingTime = mp.prefs.get("refreshingTime");
-        this.httpVerb = mp.prefs.get("httpVerb");
-        this.useProxy = mp.prefs.get("useProxy");
         mp.prefs.registerCallback(handlerPreferences.bind(this));
     };
 
@@ -85,79 +81,32 @@
 
         // Center Layout:
         createIframe.call(this);
-        createForm.call(this);
 
         // Repaint layout:
         repaint.call(this);
     };
 
     var loadURL = function loadURL(value) {
-        var tempUrl = value;
+        var url = value;
 
         if (!value) {
-            tempUrl = this.currentUrl;
+            url = this.currentUrl;
         }
 
-        var frm = document.getElementById('brw_form');
-        var url = parseURL.call(this, tempUrl);
-
-        for (var k in url.params) {
-            var prm = document.createElement('input');
-            prm.setAttribute('type', 'text');
-            prm.setAttribute('name', k);
-            prm.setAttribute('value', url.params[k]);
-            frm.appendChild(prm);
+        // Check the URL provides a protocol
+        // If not, use http by default
+        if (url.split('://').length === 1) {
+            url = "http://" + url;
         }
 
-        if (url.source.split('://').length === 1) {
-            tempUrl = "http://" + url.source;
-        } else {
-            tempUrl = url.source;
-        }
+        this.currentUrl = url;
 
-        if (this.useProxy && this.useProxy === true) {
-            var options = {
-                method: this.httpVerb
-            };
-            tempUrl = mp.http.buildProxyURL(tempUrl, options);
-        }
+        var finalurl = mp.http.buildProxyURL(url, {
+            supportsAccessControl: true,
+            forceProxy: mp.prefs.get("useProxy")
+        });
 
-        frm.setAttribute('action', tempUrl);
-        document.getElementById('browser').src = tempUrl;
-
-        if (frm.firstChild) {
-            frm.removeChild(frm.firstChild);
-        }
-
-        this.currentUrl = tempUrl;
-    };
-
-    var parseURL = function parseURL(url) {
-        var a =  document.createElement('a');
-        a.href = url;
-        return {
-            source: url,
-            protocol: a.protocol.replace(':', ''),
-            host: a.hostname,
-            port: a.port,
-            query: a.search,
-            params: (function () {
-                var ret = {},
-                seg = a.search.replace(/^\?/, '').split('&'),
-                len = seg.length, s;
-                for (var i = 0; i < len; i++) {
-                    if (!seg[i]) { continue; }
-                    s = seg[i].split('=');
-                    ret[s[0]] = s[1];
-                }
-                return ret;
-            })(),
-            file: (a.pathname.match(/\/([^\/?#]+)$/i) || [''])[1],
-            hash: a.hash.replace('#', ''),
-            path: a.pathname.replace(/^([^\/])/, '/$1'),
-            relative: (a.href.match(/tp:\/\/[^\/]+(.+)/) || [''])[1],
-            segments: a.pathname.replace(/^\//, '').split('/')
-        };
+        document.getElementById('browser').src = finalurl;
     };
 
     // Preferences
@@ -170,13 +119,6 @@
             this.refreshingTime = preferences.refreshingTime;
             setRefreshingTimePreference.call(this);
         }
-        if (preferences.httpVerb) {
-            this.httpVerb = preferences.httpVerb;
-        }
-        if (preferences.useProxy === true || preferences.useProxy === false) {
-            this.useProxy = preferences.useProxy;
-        }
-
         if (this.currentUrl) {
             loadURL.call(this);
         }
@@ -220,7 +162,7 @@
         div.setAttribute('id', id);
         a.textContent = text;
         div.appendChild(a);
-        this.layout.getNorthContainer().appendChild(div);
+        this.layout.north.appendChild(div);
     };
 
     var createIframe = function createIframe() {
@@ -230,16 +172,7 @@
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('width', '100%');
         iframe.setAttribute('height', '95%');
-        this.layout.getCenterContainer().appendChild(iframe);
-    };
-
-    var createForm = function createForm() {
-        var form = document.createElement('form');
-        form.setAttribute('id', 'brw_form');
-        form.setAttribute('method', 'get');
-        form.setAttribute('target', 'browser');
-        form.style.display = 'none';
-        this.layout.getCenterContainer().appendChild(form);
+        this.layout.center.appendChild(iframe);
     };
 
     var setRefreshingTimePreference = function setRefreshingTimePreference(time) {

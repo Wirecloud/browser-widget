@@ -13,10 +13,6 @@
     <authors>Santiago Blanco &lt;sblanco@conwet.com&gt;</authors>
   </details>
   <preferences>
-    <preference name="httpVerb" type="list" label="HTTP verb" description="HTTP verb" default="GET">
-      <option label="GET" value="GET"/>
-      <option label="POST" value="POST"/>
-    </preference>
     <preference name="homeUrl" type="text" label="Home page URL" description="Home page URL" default="http://www.as.com"/>
     <preference name="refreshingTime" type="text" label="Autorefresh period (minutes)" description="Refreshing interval in minutes. You can use 0 for making this widget not autorefresh web pages." default="0"/>
     <preference name="useProxy" type="boolean" label="Use Proxy" description="Use WireCloud proxy to retreive web pages" default="false"/>
