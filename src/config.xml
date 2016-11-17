@@ -25,6 +25,6 @@
     <inputendpoint name="urlInput" type="text" label="URL" description="This url will be loaded" actionlabel="Url" friendcode="url"/>
     <inputendpoint name="paramsInput" type="text" label="Paremeters" description="Url parameters" actionlabel="Parameters" friendcode="parameters"/>
   </wiring>
-  <contents src="index.html" cacheable="false" useplatformstyle="true"/>
+  <contents src="index.html" useplatformstyle="true"/>
   <rendering height="26" width="10"/>
 </widget>

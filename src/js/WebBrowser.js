@@ -22,17 +22,8 @@
 
     // Constructor
     var WebBrowser = function WebBrowser() {
-        // Preferences
-        this.urlPref = "";
-        this.homeUrl = "";
-        this.refreshingTime = 0;
 
-        // Wiring
-        this.url = "";
-
-        // Internal status:
-        this.layout = new StyledElements.VerticalLayout();
-        this.currentUrl = "";
+        this.currentUrl = null;
     };
 
     WebBrowser.prototype.init = function init() {
@@ -42,6 +33,9 @@
         setWiringInputs.call(this);
         // User Interface:
         buildDOM.call(this);
+
+        // Load initial page
+        goHomeClickHandler.call(this);
     };
 
     // =========================================================================
@@ -50,7 +44,6 @@
 
 
     var setPreferences = function setPreferences() {
-        this.homeUrl = MashupPlatform.prefs.get("homeUrl");
         this.refreshingTime = MashupPlatform.prefs.get("refreshingTime");
         MashupPlatform.prefs.registerCallback(handlerPreferences.bind(this));
     };
@@ -60,14 +53,15 @@
     };
 
     var buildDOM = function buildDOM() {
-        // Build Layout:
+        // Build Layout
+        this.layout = new se.VerticalLayout();
         this.layout.insertInto(document.body);
 
-        // North Layout:
+        // North Layout
         createLink.call(this, goHomeClickHandler, 'home', 'Home');
         createLink.call(this, refreshClickHandler, 'refresh', 'Refresh');
 
-        // Center Layout:
+        // Center Layout
         createIframe.call(this);
     };
 
@@ -96,16 +90,9 @@
 
     // Preferences
     var handlerPreferences = function handlerPreferences(preferences) {
-        if (preferences.homeUrl) {
-            this.homeUrl = preferences.homeUrl;
-        }
-
         if (preferences.refreshingTime) {
             this.refreshingTime = preferences.refreshingTime;
             setRefreshingTimePreference.call(this);
-        }
-        if (this.currentUrl) {
-            loadURL.call(this);
         }
     };
 
@@ -116,7 +103,7 @@
 
     // UI
     var goHomeClickHandler = function goHomeClickHandler() {
-        loadURL.call(this, this.homeUrl);
+        loadURL.call(this, MashupPlatform.prefs.get('homeUrl'));
     };
 
     // UI
