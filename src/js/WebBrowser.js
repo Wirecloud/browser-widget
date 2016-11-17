@@ -16,7 +16,7 @@
 
 /* globals StyledElements */
 
-(function (mp, se) {
+(function (se) {
 
     "use strict";
 
@@ -29,7 +29,6 @@
 
         // Wiring
         this.url = "";
-        this.params = "";
 
         // Internal status:
         this.layout = new StyledElements.VerticalLayout();
@@ -41,8 +40,6 @@
         setPreferences.call(this);
         // Wiring:
         setWiringInputs.call(this);
-        // Context:
-        setResizeWidget.call(this);
         // User Interface:
         buildDOM.call(this);
     };
@@ -53,22 +50,13 @@
 
 
     var setPreferences = function setPreferences() {
-        this.homeUrl = mp.prefs.get("homeUrl");
-        this.refreshingTime = mp.prefs.get("refreshingTime");
-        mp.prefs.registerCallback(handlerPreferences.bind(this));
+        this.homeUrl = MashupPlatform.prefs.get("homeUrl");
+        this.refreshingTime = MashupPlatform.prefs.get("refreshingTime");
+        MashupPlatform.prefs.registerCallback(handlerPreferences.bind(this));
     };
 
     var setWiringInputs = function setWiringInputs() {
-        mp.wiring.registerCallback("urlInput", urlInputHandler.bind(this));
-        mp.wiring.registerCallback("paramsInput", paramsInputHandler.bind(this));
-    };
-
-    var setResizeWidget = function setResizeWidget() {
-        mp.widget.context.registerCallback(function (newValues) {
-            if ("heightInPixels" in newValues || "widthInPixels" in newValues) {
-                repaint.call(this);
-            }
-        }.bind(this));
+        MashupPlatform.wiring.registerCallback("urlInput", urlInputHandler.bind(this));
     };
 
     var buildDOM = function buildDOM() {
@@ -81,9 +69,6 @@
 
         // Center Layout:
         createIframe.call(this);
-
-        // Repaint layout:
-        repaint.call(this);
     };
 
     var loadURL = function loadURL(value) {
@@ -101,9 +86,9 @@
 
         this.currentUrl = url;
 
-        var finalurl = mp.http.buildProxyURL(url, {
+        var finalurl = MashupPlatform.http.buildProxyURL(url, {
             supportsAccessControl: true,
-            forceProxy: mp.prefs.get("useProxy")
+            forceProxy: MashupPlatform.prefs.get("useProxy")
         });
 
         document.getElementById('browser').src = finalurl;
@@ -129,14 +114,6 @@
         loadURL.call(this, url);
     };
 
-    // Input
-    var paramsInputHandler = function paramsInputHandler(params) {
-        if (this.currentUrl) {
-            var url = this.currentUrl + params;
-            loadURL.call(this, url);
-        }
-    };
-
     // UI
     var goHomeClickHandler = function goHomeClickHandler() {
         loadURL.call(this, this.homeUrl);
@@ -146,12 +123,6 @@
     var refreshClickHandler = function refreshClickHandler() {
         if (this.currentUrl) {
             loadURL.call(this);
-        }
-    };
-
-    var repaint = function repaint() {
-        if (this.layout) {
-            this.layout.repaint();
         }
     };
 
@@ -185,4 +156,4 @@
 
     window.WebBrowser = WebBrowser;
 
-})(MashupPlatform, StyledElements);
+})(StyledElements);
