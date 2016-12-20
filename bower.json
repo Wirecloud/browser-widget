@@ -1,5 +1,5 @@
 {
-  "name": "widget",
+  "name": "web-browser",
   "dependencies": {
     "jquery": "~2.1.4"
   },
